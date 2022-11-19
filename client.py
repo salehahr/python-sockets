@@ -1,7 +1,26 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from config import socket_config
-from MySocket import ClientSocket
+from socket_comms import ClientSocket
 
-client_socket = ClientSocket(socket_config)
-client_socket.start()
+if TYPE_CHECKING:
+    from socket import SocketType
 
-client_socket.send(b"Hello from the client!")
+
+class UserInputClient(ClientSocket):
+    """
+    Client that takes user input and sends it to a server.
+    """
+
+    def write(self, connection: SocketType):
+        """
+        Appends the user input to the write buffer and sends it to the server.
+        """
+        self._write_buffer += input("Type message: ")
+        super(UserInputClient, self).write(connection)
+
+
+client = UserInputClient(socket_config)
+client.start()
